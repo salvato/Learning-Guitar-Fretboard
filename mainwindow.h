@@ -67,6 +67,8 @@ public slots:
 
 private:
     QSettings settings;
+    QList<QAudioDeviceInfo> deviceInfo;
+    QAudioFormat formatAudio;
     int sampleRate;
     double sampleSeconds;
     StaffArea* pStaffArea;

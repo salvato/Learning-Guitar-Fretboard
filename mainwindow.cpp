@@ -35,7 +35,7 @@ MainWindow::MainWindow()
     , pStaffArea(new StaffArea())
     , pDeviceBox(new QComboBox())
     , pStartButton(new QPushButton("Start"))
-    , pSensitivityLabel(new QLabel("Sensitivity"))
+    , pSensitivityLabel(new QLabel("   Sensitivity"))
     , pSensitivityBox(new QComboBox())
     , pStringLabel(new QLabel("String"))
     , pStringBox(new QComboBox())
@@ -76,7 +76,7 @@ MainWindow::MainWindow()
 
     // Audio Devices ComboBox handling
     // Fills the ComboBox with a list of audio devices that support AudioInput
-    QList<QAudioDeviceInfo> deviceInfo = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    deviceInfo = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
     for(int i=0; i<deviceInfo.count(); i++) {
         pDeviceBox->addItem(deviceInfo.at(i).deviceName(), QVariant::fromValue(deviceInfo.at(i)));
     }
@@ -103,7 +103,7 @@ MainWindow::MainWindow()
 
     pScoreLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     pScoreEdit->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    pScoreEdit->setMaxLength(2);
+    pScoreEdit->setMaxLength(3);
     pScoreEdit->setReadOnly(true);
     pScoreEdit->setText(QString("%1").arg(score));
 
@@ -117,28 +117,25 @@ MainWindow::MainWindow()
     // MainWindow Layout
     QGridLayout *mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(pStaffArea,        0, 0, 3, 3);
+    mainLayout->addWidget(pStaffArea,        0, 0, 3, 4);
 
-    mainLayout->addWidget(pScoreLabel,       3, 0, 1, 1);
-    mainLayout->addWidget(pScoreEdit,        3, 1, 2, 1);
-    mainLayout->addWidget(pStringLabel,       3, 2, 1, 1);
+    mainLayout->addWidget(pStringLabel,      3, 0, 2, 1);
+    mainLayout->addWidget(pStringBox,        3, 1, 2, 1);
+    mainLayout->addWidget(pElapsedTimeLabel, 3, 2, 2, 1);
+    mainLayout->addWidget(pElapsedTimeEdit,  3, 3, 2, 1);
 
-//    mainLayout->addWidget(pStringLabel,      5, 0, 1, 1);
-//    mainLayout->addWidget(pStringBox,        5, 1, 1, 1);
-//    mainLayout->addWidget(pRevealCheckBox,   5, 2, 1, 1);
+    mainLayout->addWidget(pScoreLabel,       5, 0, 2, 2);
+    mainLayout->addWidget(pScoreEdit,        5, 2, 2, 2);
 
-/*
-    mainLayout->addWidget(pScoreEdit,        6, 2, 1, 1);
-    mainLayout->addWidget(pElapsedTimeLabel, 6, 3, 1, 1);
-    mainLayout->addWidget(pElapsedTimeEdit,  6, 4, 1, 1);
+    mainLayout->addWidget(pRevealCheckBox,   7, 0, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityLabel, 7, 2, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityBox,   7, 3, 1, 1, Qt::AlignLeft);
 
-    mainLayout->addWidget(pSensitivityLabel, 7, 3, 1, 1);
-    mainLayout->addWidget(pSensitivityBox,   7, 4, 1, 1);
+    mainLayout->addWidget(new QLabel("Input"),        8, 0, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(pDeviceBox,        8, 1, 1, 3);
 
-    mainLayout->addWidget(pDeviceBox,        8, 0, 1, 5);
+    mainLayout->addWidget(pStartButton,      9, 0, 1, 1);
 
-    mainLayout->addWidget(pStartButton,      9, 2, 1, 1);
-*/
 
     setLayout(mainLayout);
 
@@ -155,7 +152,6 @@ MainWindow::MainWindow()
             this, SLOT(OnRevealCheckBoxStateChanged(int)));
 
     // Define requested Audio Format
-    QAudioFormat formatAudio;
     formatAudio.setSampleRate(sampleRate);
     formatAudio.setChannelCount(1);
     formatAudio.setSampleType(QAudioFormat::SignedInt);
@@ -248,62 +244,32 @@ MainWindow::buildFontSizes() {
     vMargin = margins.bottom() + margins.top();
     hMargin = margins.left() + margins.right();
     font.setCapitalization(QFont::Capitalize);
-    iFontSize = qMin((pScoreEdit->width()/pScoreEdit->maxLength())-2*hMargin,
+    iFontSize = qMin((pScoreEdit->width()/pScoreEdit->maxLength())-hMargin,
                      pScoreEdit->height()-vMargin);
     font.setPixelSize(iFontSize);
     pScoreEdit->setFont(font);
+    pScoreLabel->setFont(font);
 
-//    pElapsedTimeEdit->setFont(font);
-//    pStringBox->setFont(font);
-//    pStartButton->setFont(font);
+    font.setCapitalization(QFont::MixedCase);
+    font.setPixelSize(iFontSize/4);
+    pStringLabel->setFont(font);
+    pStringBox->setFont(font);
+    pElapsedTimeLabel->setFont(font);
+    pElapsedTimeEdit->setFont(font);
 
-//    font = pStringBox->font();
-//    margins = pStringBox->contentsMargins();
-//    vMargin = margins.bottom() + margins.top();
-//    hMargin = margins.left() + margins.right();
-//    iFontSize = qMin((pStringBox->width()/2)-2*hMargin,
-//                     pStringBox->height()-vMargin);
-//    font.setCapitalization(QFont::MixedCase);
-//    font.setPixelSize(iFontSize);
-//    pStringBox->setFont(font);
-//    pSensitivityBox->setFont(font);
+    font = pSensitivityLabel->font();
+    margins = pSensitivityLabel->contentsMargins();
+    vMargin = margins.bottom() + margins.top();
+    hMargin = margins.left() + margins.right();
+    iFontSize = qMin((pStringBox->width())-hMargin,
+                     pStringBox->height()-vMargin);
+    font.setCapitalization(QFont::MixedCase);
+    font.setPixelSize(iFontSize);
+    pSensitivityLabel->setFont(font);
+    pSensitivityBox->setFont(font);
+    pRevealCheckBox->setFont(font);
 
-//    font = pRevealCheckBox->font();
-//    margins = pRevealCheckBox->contentsMargins();
-//    vMargin = margins.bottom() + margins.top();
-//    hMargin = margins.left() + margins.right();
-//    iFontSize = qMin((pRevealCheckBox->width()/pRevealCheckBox->text().length()+1)-2*hMargin,
-//                     pRevealCheckBox->height()-vMargin);
-//    font.setPixelSize(iFontSize);
-//    pRevealCheckBox->setFont(font);
-
-//    timeoutEdit[0]->setFont(font);
-//    timeoutEdit[1]->setFont(font);
-
-//    font = scoreEdit[0]->font();
-//    margins = scoreEdit[0]->contentsMargins();
-//    vMargin = margins.bottom() + margins.top();
-//    hMargin = margins.left() + margins.right();
-//    font.setWeight(QFont::Black);
-//    iFontSize = qMin((scoreEdit[0]->width()/scoreEdit[0]->maxLength())-2*hMargin,
-//                     scoreEdit[0]->height()-vMargin);
-//    font.setPixelSize(iFontSize);
-//    scoreEdit[0]->setFont(font);
-//    scoreEdit[1]->setFont(font);
-
-//    font = timeoutLabel->font();
-//    margins = timeoutLabel->contentsMargins();
-//    vMargin = margins.bottom() + margins.top();
-//    hMargin = margins.left() + margins.right();
-//    iFontSize = qMin((timeoutLabel->width()/timeoutLabel->text().length())-2*hMargin,
-//                     timeoutLabel->height()-vMargin);
-//    font.setPixelSize(iFontSize);
-
-//    timeoutLabel->setFont(font);
-//    setsLabel->setFont(font);
-//    serviceLabel->setFont(font);
-//    font.setWeight(QFont::Black);
-//    scoreLabel->setFont(font);
+    pStartButton->setFont(font);
 }
 
 
@@ -383,6 +349,10 @@ MainWindow::OnBufferFull() {
 void
 MainWindow::onInputDeviceChanged(int index) {
     Q_UNUSED(index)
+    if(pAudioInput) delete pAudioInput;
+    pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio, this);
+    pAudioInput->setBufferSize(sampleRate*sampleSeconds);
+
 //    qDebug() << "onInputDeviceChanged(" << index << ")";
 }
 
