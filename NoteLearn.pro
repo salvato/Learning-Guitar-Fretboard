@@ -32,31 +32,19 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    AxisFrame.cpp \
-    AxisLimits.cpp \
-    DataSetProperties.cpp \
-    axesdialog.cpp \
-    datastream2d.cpp \
+    edit.cpp \
     iobuffer.cpp \
     main.cpp \
     mainwindow.cpp \
     note.cpp \
-    plot2d.cpp \
-    plotpropertiesdlg.cpp \
     staffarea.cpp
 
 HEADERS += \
-    AxisFrame.h \
-    AxisLimits.h \
-    DataSetProperties.h \
-    axesdialog.h \
-    datastream2d.h \
+    edit.h \
     iobuffer.h \
     mainwindow.h \
     note.h \
     noteDefinition.h \
-    plot2d.h \
-    plotpropertiesdlg.h \
     staffarea.h
 
 # Default rules for deployment.

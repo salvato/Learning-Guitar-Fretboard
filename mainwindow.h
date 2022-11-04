@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-//#define SHOW_PLOT
 
 #include "staffarea.h"
 #include "note.h"
 #include "iobuffer.h"
+#include "edit.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QLabel>
@@ -42,11 +42,6 @@ SOFTWARE.
 #include <QDateTime>
 
 
-#ifdef SHOW_PLOT
-    QT_FORWARD_DECLARE_CLASS(Plot2D)
-#endif
-
-
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -56,8 +51,10 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     void saveSettings();
     void getSettings();
+    void buildFontSizes();
 
 public slots:
     void onInputDeviceChanged(int index);
@@ -67,7 +64,6 @@ public slots:
     void OnRevealCheckBoxStateChanged(int);
     void OnBufferFull();
     void onUpdateTimerElapsed();
-    void OnTestTimerElapsed();
 
 private:
     QSettings settings;
@@ -85,10 +81,10 @@ private:
     QCheckBox* pRevealCheckBox;
     bool bRevealChecked;
     QLabel* pScoreLabel;
-    QLineEdit* pScoreEdit;
+    Edit* pScoreEdit;
     int score;
     QLabel* pElapsedTimeLabel;
-    QLineEdit* pElapsedTimeEdit;
+    Edit* pElapsedTimeEdit;
     QTime elapsedTime;
     IOBuffer* pBuffer;
     char* pData;
@@ -101,9 +97,6 @@ private:
     int* acorLags;
     double* R;
     QRandomGenerator* pRandomGenerator;
-#ifdef SHOW_PLOT
-    Plot2D* pPlot;
-#endif
     double threshold;
     QString sInputDevice;
     QTimer testTimer;
@@ -116,4 +109,5 @@ private:
     int currentString;
     int startNote, endNote, nFrets;
     QTime startTime;
+    bool bFontBuilt;
 };

@@ -36,6 +36,11 @@ main(int argc, char *argv[]) {
     QCoreApplication::setApplicationVersion("0.0.1");
 
     MainWindow w;
+#ifdef Q_OS_ANDROID
+    w.showFullScreen();
+#else
     w.show();
+#endif
+
     return a.exec();
 }
