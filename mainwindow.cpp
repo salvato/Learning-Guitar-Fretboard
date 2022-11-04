@@ -44,9 +44,10 @@ MainWindow::MainWindow()
     , bRevealChecked(false)
     , pScoreLabel(new QLabel("Score"))
     , pScoreEdit(new Edit())
-    , score(0)
+    , score(999)
     , pElapsedTimeLabel(new QLabel("Time"))
     , pElapsedTimeEdit(new Edit())
+    , pInputLabel(new QLabel("Input"))
     , pData(nullptr)
     , chunkSize(sampleRate*sampleSeconds)
     , pRandomGenerator(QRandomGenerator::system())
@@ -117,24 +118,24 @@ MainWindow::MainWindow()
     // MainWindow Layout
     QGridLayout *mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(pStaffArea,        0, 0, 3, 4);
+    mainLayout->addWidget(pStaffArea,        0, 0, 4, 6);
 
-    mainLayout->addWidget(pStringLabel,      3, 0, 2, 1);
-    mainLayout->addWidget(pStringBox,        3, 1, 2, 1);
-    mainLayout->addWidget(pElapsedTimeLabel, 3, 2, 2, 1);
-    mainLayout->addWidget(pElapsedTimeEdit,  3, 3, 2, 1);
+    mainLayout->addWidget(pStringLabel,      4, 0, 1, 2, Qt::AlignHCenter);
+    mainLayout->addWidget(pScoreLabel,       4, 2, 1, 2, Qt::AlignHCenter);
+    mainLayout->addWidget(pElapsedTimeLabel, 4, 4, 1, 2, Qt::AlignHCenter);
 
-    mainLayout->addWidget(pScoreLabel,       5, 0, 2, 2);
-    mainLayout->addWidget(pScoreEdit,        5, 2, 2, 2);
+    mainLayout->addWidget(pStringBox,        5, 0, 1, 2);
+    mainLayout->addWidget(pScoreEdit,        5, 2, 1, 2);
+    mainLayout->addWidget(pElapsedTimeEdit,  5, 4, 1, 2);
 
-    mainLayout->addWidget(pRevealCheckBox,   7, 0, 1, 2, Qt::AlignRight);
-    mainLayout->addWidget(pSensitivityLabel, 7, 2, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(pSensitivityBox,   7, 3, 1, 1, Qt::AlignLeft);
+    mainLayout->addWidget(pRevealCheckBox,   6, 0, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityLabel, 6, 2, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityBox,   6, 4, 1, 2, Qt::AlignLeft);
 
-    mainLayout->addWidget(new QLabel("Input"),        8, 0, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(pDeviceBox,        8, 1, 1, 3);
+    mainLayout->addWidget(pInputLabel,       7, 0, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(pDeviceBox,        7, 1, 1, 5);
 
-    mainLayout->addWidget(pStartButton,      9, 0, 1, 1);
+    mainLayout->addWidget(pStartButton,      8, 3, 1, 2);
 
 
     setLayout(mainLayout);
@@ -234,6 +235,7 @@ MainWindow::resizeEvent(QResizeEvent *event) {
 
 void
 MainWindow::buildFontSizes() {
+
     QFont font;
     int iFontSize;
     int hMargin, vMargin;
@@ -246,30 +248,24 @@ MainWindow::buildFontSizes() {
     font.setCapitalization(QFont::Capitalize);
     iFontSize = qMin((pScoreEdit->width()/pScoreEdit->maxLength())-hMargin,
                      pScoreEdit->height()-vMargin);
-    font.setPixelSize(iFontSize);
+    font.setPixelSize(iFontSize*2);
     pScoreEdit->setFont(font);
+    font.setPixelSize(iFontSize);
     pScoreLabel->setFont(font);
 
     font.setCapitalization(QFont::MixedCase);
-    font.setPixelSize(iFontSize/4);
     pStringLabel->setFont(font);
     pStringBox->setFont(font);
     pElapsedTimeLabel->setFont(font);
     pElapsedTimeEdit->setFont(font);
 
-    font = pSensitivityLabel->font();
-    margins = pSensitivityLabel->contentsMargins();
-    vMargin = margins.bottom() + margins.top();
-    hMargin = margins.left() + margins.right();
-    iFontSize = qMin((pStringBox->width())-hMargin,
-                     pStringBox->height()-vMargin);
-    font.setCapitalization(QFont::MixedCase);
-    font.setPixelSize(iFontSize);
     pSensitivityLabel->setFont(font);
     pSensitivityBox->setFont(font);
     pRevealCheckBox->setFont(font);
 
+    pInputLabel->setFont(font);
     pStartButton->setFont(font);
+
 }
 
 

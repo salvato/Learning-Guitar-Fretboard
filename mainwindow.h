@@ -88,6 +88,7 @@ private:
     QLabel* pElapsedTimeLabel;
     Edit* pElapsedTimeEdit;
     QTime elapsedTime;
+    QLabel* pInputLabel;
     IOBuffer* pBuffer;
     char* pData;
     int chunkSize;
