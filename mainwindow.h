@@ -74,19 +74,21 @@ private:
     StaffArea* pStaffArea;
     QComboBox* pDeviceBox;
     QPushButton* pStartButton;
+    QPushButton* pExitButton;
     QLabel* pSensitivityLabel;
     QComboBox* pSensitivityBox;
     QLabel* pStringLabel;
     QComboBox* pStringBox;
     QAudioInput* pAudioInput;
     QList<QString> strings;
-    QCheckBox* pRevealCheckBox;
+//    QCheckBox* pRevealCheckBox;
+    QPushButton* pRevealCheckBox;
     bool bRevealChecked;
     QLabel* pScoreLabel;
-    Edit* pScoreEdit;
+    QLabel* pScoreEdit;
     int score;
     QLabel* pElapsedTimeLabel;
-    Edit* pElapsedTimeEdit;
+    QLabel* pElapsedTimeEdit;
     QTime elapsedTime;
     QLabel* pInputLabel;
     IOBuffer* pBuffer;
@@ -113,4 +115,9 @@ private:
     int startNote, endNote, nFrets;
     QTime startTime;
     bool bFontBuilt;
+
+    QString          sNormalStyle;
+    QString          sErrorStyle;
+    QString          sDarkStyle;
+    QString          sSuccessStyle;
 };

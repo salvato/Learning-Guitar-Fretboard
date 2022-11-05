@@ -35,6 +35,8 @@ main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("NoteLearn");
     QCoreApplication::setApplicationVersion("0.0.1");
 
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     MainWindow w;
 #ifdef Q_OS_ANDROID
     w.showFullScreen();

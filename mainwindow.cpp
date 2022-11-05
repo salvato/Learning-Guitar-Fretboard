@@ -35,19 +35,21 @@ MainWindow::MainWindow()
     , pStaffArea(new StaffArea())
     , pDeviceBox(new QComboBox())
     , pStartButton(new QPushButton("Start"))
+    , pExitButton(new QPushButton("Exit"))
     , pSensitivityLabel(new QLabel("   Sensitivity"))
     , pSensitivityBox(new QComboBox())
     , pStringLabel(new QLabel("String"))
     , pStringBox(new QComboBox())
     , pAudioInput(nullptr)
-    , pRevealCheckBox(new QCheckBox("Reveal Note"))
+//    , pRevealCheckBox(new QCheckBox("Show Note"))
+    , pRevealCheckBox(new QPushButton("Show Note"))
     , bRevealChecked(false)
     , pScoreLabel(new QLabel("Score"))
-    , pScoreEdit(new Edit())
+    , pScoreEdit(new QLabel("999"))
     , score(999)
     , pElapsedTimeLabel(new QLabel("Time"))
-    , pElapsedTimeEdit(new Edit())
-    , pInputLabel(new QLabel("Input"))
+    , pElapsedTimeEdit(new QLabel("00:00:00"))
+    , pInputLabel(new QLabel("Input Device"))
     , pData(nullptr)
     , chunkSize(sampleRate*sampleSeconds)
     , pRandomGenerator(QRandomGenerator::system())
@@ -58,7 +60,8 @@ MainWindow::MainWindow()
 
 {
     pRandomGenerator->securelySeeded();
-    pRevealCheckBox->setLayoutDirection(Qt::RightToLeft);
+//    pRevealCheckBox->setLayoutDirection(Qt::RightToLeft);
+    pRevealCheckBox->setCheckable(true);
     setWindowTitle(tr("Note Learning"));
 
     // Notes definition (on an external File to simplify program reading)
@@ -66,6 +69,13 @@ MainWindow::MainWindow()
 
     // Get the last Saved Settings
     getSettings();
+
+
+    // Setup the styles
+    sNormalStyle  = pScoreEdit->styleSheet();
+    sErrorStyle   = "QLabel { color: rgb(255, 255, 255); background: rgb(255, 0, 0); selection-background-color: rgb(128, 128, 255); }";
+    sDarkStyle    = "QLabel { color: rgb(255, 255, 255); background: rgb(0, 0, 0); selection-background-color: rgb(128, 128, 255); }";
+    sSuccessStyle = "QLabel { color: rgb(0, 0, 0); background: rgb(255, 255, 0); selection-background-color: rgb(128, 128, 255); }";
 
     // Setup Audio Data Buffer
     pData = new char[chunkSize];
@@ -104,38 +114,36 @@ MainWindow::MainWindow()
 
     pScoreLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     pScoreEdit->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    pScoreEdit->setMaxLength(3);
-    pScoreEdit->setReadOnly(true);
     pScoreEdit->setText(QString("%1").arg(score));
 
     elapsedTime = QTime(0, 0, 0, 0);
     pElapsedTimeLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     pElapsedTimeEdit->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    pElapsedTimeEdit->setMaxLength(8);
-    pElapsedTimeEdit->setReadOnly(true);
     pElapsedTimeEdit->setText(elapsedTime.toString());
 
     // MainWindow Layout
     QGridLayout *mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(pStaffArea,        0, 0, 4, 6);
+    mainLayout->addWidget(pStaffArea,        0, 0, 3, 6);
 
-    mainLayout->addWidget(pStringLabel,      4, 0, 1, 2, Qt::AlignHCenter);
-    mainLayout->addWidget(pScoreLabel,       4, 2, 1, 2, Qt::AlignHCenter);
-    mainLayout->addWidget(pElapsedTimeLabel, 4, 4, 1, 2, Qt::AlignHCenter);
+    mainLayout->addWidget(pStringLabel,      3, 0, 1, 1, Qt::AlignHCenter|Qt::AlignBottom);
+    mainLayout->addWidget(pScoreLabel,       3, 2, 1, 2, Qt::AlignHCenter);
+    mainLayout->addWidget(pElapsedTimeLabel, 3, 4, 1, 2, Qt::AlignHCenter|Qt::AlignBottom);
 
-    mainLayout->addWidget(pStringBox,        5, 0, 1, 2);
-    mainLayout->addWidget(pScoreEdit,        5, 2, 1, 2);
-    mainLayout->addWidget(pElapsedTimeEdit,  5, 4, 1, 2);
+    mainLayout->addWidget(pStringBox,        4, 0, 1, 1, Qt::AlignHCenter|Qt::AlignTop);
+    mainLayout->addWidget(pScoreEdit,        4, 2, 1, 2);
+    mainLayout->addWidget(pElapsedTimeEdit,  4, 4, 1, 2, Qt::AlignHCenter|Qt::AlignTop);
 
-    mainLayout->addWidget(pRevealCheckBox,   6, 0, 1, 2, Qt::AlignRight);
-    mainLayout->addWidget(pSensitivityLabel, 6, 2, 1, 2, Qt::AlignRight);
-    mainLayout->addWidget(pSensitivityBox,   6, 4, 1, 2, Qt::AlignLeft);
+//    mainLayout->addWidget(pRevealCheckBox,   5, 0, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pRevealCheckBox,   5, 0, 1, 1);//, Qt::AlignHCenter);
+    mainLayout->addWidget(pSensitivityLabel, 5, 2, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityBox,   5, 4, 1, 2, Qt::AlignLeft);
 
-    mainLayout->addWidget(pInputLabel,       7, 0, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(pDeviceBox,        7, 1, 1, 5);
+    mainLayout->addWidget(pInputLabel,       6, 0, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(pDeviceBox,        6, 1, 1, 5);
 
-    mainLayout->addWidget(pStartButton,      8, 3, 1, 2);
+    mainLayout->addWidget(pExitButton,       7, 0, 1, 1);
+    mainLayout->addWidget(pStartButton,      7, 4, 1, 2);
 
 
     setLayout(mainLayout);
@@ -246,7 +254,7 @@ MainWindow::buildFontSizes() {
     vMargin = margins.bottom() + margins.top();
     hMargin = margins.left() + margins.right();
     font.setCapitalization(QFont::Capitalize);
-    iFontSize = qMin((pScoreEdit->width()/pScoreEdit->maxLength())-hMargin,
+    iFontSize = qMin((pScoreEdit->width()/3)-hMargin,
                      pScoreEdit->height()-vMargin);
     font.setPixelSize(iFontSize*2);
     pScoreEdit->setFont(font);
@@ -265,7 +273,7 @@ MainWindow::buildFontSizes() {
 
     pInputLabel->setFont(font);
     pStartButton->setFont(font);
-
+    pExitButton->setFont(font);
 }
 
 
@@ -277,10 +285,13 @@ MainWindow::onStartStopPushed() {
         pStartButton->setText("Start");
         pAudioInput->stop();
         pBuffer->close();
+        pInputLabel->setEnabled(true);
         pDeviceBox->setEnabled(true);
+        pScoreEdit->setStyleSheet(sNormalStyle);
         return;
     }
     pStartButton->setText("Stop");
+    pInputLabel->setDisabled(true);
     pDeviceBox->setDisabled(true);
     pBuffer->open(QIODevice::WriteOnly);
     currentNote = pRandomGenerator->bounded(startNote, endNote);
@@ -334,9 +345,10 @@ MainWindow::OnBufferFull() {
             pScoreEdit->setText(QString("%1").arg(score));
             currentNote = pRandomGenerator->bounded(startNote, endNote);
             pStaffArea->setNote(notes[currentNote], currentNote);
+            pScoreEdit->setStyleSheet(sSuccessStyle);
         }
         else {
-            qDebug() << "Failure !";
+            pScoreEdit->setStyleSheet(sErrorStyle);
         }
     } // if(nDetections > 1)
 }
@@ -417,7 +429,9 @@ MainWindow::OnRevealCheckBoxStateChanged(int isChecked) {
 
 void
 MainWindow::onUpdateTimerElapsed() {
-    elapsedTime = elapsedTime.addSecs(startTime.secsTo(QTime::currentTime()));
+    int mSecs = startTime.msecsTo(QTime::currentTime());
+    elapsedTime = elapsedTime.addSecs(mSecs/1000);
+    startTime = QTime::currentTime();
     pElapsedTimeEdit->setText(elapsedTime.toString());
 }
 

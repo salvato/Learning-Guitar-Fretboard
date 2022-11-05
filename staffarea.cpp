@@ -69,14 +69,14 @@ StaffArea::StaffArea(QWidget *parent)
 QSize
 StaffArea::minimumSizeHint() const
 {
-    return QSize(10*lineSpace, 12*lineSpace);
+    return QSize(10*lineSpace+2*xBound, 12*lineSpace+2*yTop);
 }
 
 
 QSize
 StaffArea::sizeHint() const
 {
-    return QSize(600, 12*lineSpace);
+    return QSize(600, 12*lineSpace+2*yTop);
 }
 
 
@@ -103,6 +103,9 @@ StaffArea::paintEvent(QPaintEvent* /* event */) {
     painter.setPen(pen);
     painter.setBrush(brush);
     painter.setRenderHint(QPainter::Antialiasing, true);
+    QFont font = painter.font();
+    font.setPixelSize(48);
+    painter.setFont(font);
 
     // Draw the staff
     painter.drawImage(xBound, 3*lineSpace, chiave);
@@ -155,7 +158,7 @@ StaffArea::paintEvent(QPaintEvent* /* event */) {
             return;
     }
     if(bRevealNote) {
-        painter.drawText(QRect(x-50, height()-lineSpace, 100, lineSpace),
+        painter.drawText(QRect(x-100, height()-3*lineSpace, 200, 3*lineSpace),
                          Qt::AlignCenter,
                          note.sname);
     }
