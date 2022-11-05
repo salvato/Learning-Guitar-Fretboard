@@ -4,5 +4,6 @@
         <file>Semibreve.png</file>
         <file>Diesis.png</file>
         <file>Bemolle.png</file>
+        <file>README.md</file>
     </qresource>
 </RCC>
