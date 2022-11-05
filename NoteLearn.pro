@@ -54,6 +54,7 @@ RESOURCES += \
     NoteLearn.qrc
 
 DISTFILES += \
+    Screenshot.png \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle.properties \
