@@ -28,7 +28,6 @@ SOFTWARE.
 #include "staffarea.h"
 #include "note.h"
 #include "iobuffer.h"
-#include "edit.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QLabel>
@@ -61,9 +60,10 @@ public slots:
     void onSensitivityChanged(int index);
     void onStringChanged(int index);
     void onStartStopPushed();
-    void OnRevealCheckBoxStateChanged(int);
+    void OnRevealCheckBoxStateChanged();
     void OnBufferFull();
     void onUpdateTimerElapsed();
+    void onExitPushed();
 
 private:
     QSettings settings;
@@ -81,8 +81,7 @@ private:
     QComboBox* pStringBox;
     QAudioInput* pAudioInput;
     QList<QString> strings;
-//    QCheckBox* pRevealCheckBox;
-    QPushButton* pRevealCheckBox;
+    QPushButton* pRevealButton;
     bool bRevealChecked;
     QLabel* pScoreLabel;
     QLabel* pScoreEdit;

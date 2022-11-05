@@ -28,14 +28,16 @@ SOFTWARE.
 
 int
 main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
 
     QCoreApplication::setOrganizationDomain("Gabriele.Salvato");
     QCoreApplication::setOrganizationName("Gabriele.Salvato");
     QCoreApplication::setApplicationName("NoteLearn");
     QCoreApplication::setApplicationVersion("0.0.1");
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#ifdef Q_OS_ANDROID
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+    QApplication a(argc, argv);
 
     MainWindow w;
 #ifdef Q_OS_ANDROID

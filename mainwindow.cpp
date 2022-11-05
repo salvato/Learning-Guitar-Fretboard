@@ -27,6 +27,8 @@ SOFTWARE.
 #include <QtWidgets>
 #include <QAudioDeviceInfo>
 
+// Mio cell 360x717
+// Tablet Acer 1280x752
 
 MainWindow::MainWindow()
     : QWidget()
@@ -41,12 +43,11 @@ MainWindow::MainWindow()
     , pStringLabel(new QLabel("String"))
     , pStringBox(new QComboBox())
     , pAudioInput(nullptr)
-//    , pRevealCheckBox(new QCheckBox("Show Note"))
-    , pRevealCheckBox(new QPushButton("Show Note"))
+    , pRevealButton(new QPushButton("Show Note"))
     , bRevealChecked(false)
     , pScoreLabel(new QLabel("Score"))
-    , pScoreEdit(new QLabel("999"))
-    , score(999)
+    , pScoreEdit(new QLabel(""))
+    , score(0)
     , pElapsedTimeLabel(new QLabel("Time"))
     , pElapsedTimeEdit(new QLabel("00:00:00"))
     , pInputLabel(new QLabel("Input Device"))
@@ -60,8 +61,7 @@ MainWindow::MainWindow()
 
 {
     pRandomGenerator->securelySeeded();
-//    pRevealCheckBox->setLayoutDirection(Qt::RightToLeft);
-    pRevealCheckBox->setCheckable(true);
+    pRevealButton->setCheckable(true);
     setWindowTitle(tr("Note Learning"));
 
     // Notes definition (on an external File to simplify program reading)
@@ -110,7 +110,8 @@ MainWindow::MainWindow()
     pStringBox->setCurrentIndex(currentString);
     onStringChanged(currentString);
 
-    OnRevealCheckBoxStateChanged(int(bRevealChecked));
+    pRevealButton->setChecked(bRevealChecked);
+    pStaffArea->setRevealNote(bRevealChecked);
 
     pScoreLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     pScoreEdit->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
@@ -124,31 +125,39 @@ MainWindow::MainWindow()
     // MainWindow Layout
     QGridLayout *mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(pStaffArea,        0, 0, 3, 6);
+    QWidget *lineB = new QWidget;
+    lineB->setFixedHeight(2);
+    lineB->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lineB->setStyleSheet(QString("background-color: rgb(192, 192, 192);"));
 
-    mainLayout->addWidget(pStringLabel,      3, 0, 1, 1, Qt::AlignHCenter|Qt::AlignBottom);
-    mainLayout->addWidget(pScoreLabel,       3, 2, 1, 2, Qt::AlignHCenter);
-    mainLayout->addWidget(pElapsedTimeLabel, 3, 4, 1, 2, Qt::AlignHCenter|Qt::AlignBottom);
+    mainLayout->addWidget(pInputLabel,       0, 0, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(pDeviceBox,        0, 1, 1, 5);
 
-    mainLayout->addWidget(pStringBox,        4, 0, 1, 1, Qt::AlignHCenter|Qt::AlignTop);
-    mainLayout->addWidget(pScoreEdit,        4, 2, 1, 2);
-    mainLayout->addWidget(pElapsedTimeEdit,  4, 4, 1, 2, Qt::AlignHCenter|Qt::AlignTop);
+    mainLayout->addWidget(pStaffArea,        1, 0, 3, 6);
 
-//    mainLayout->addWidget(pRevealCheckBox,   5, 0, 1, 2, Qt::AlignRight);
-    mainLayout->addWidget(pRevealCheckBox,   5, 0, 1, 1);//, Qt::AlignHCenter);
-    mainLayout->addWidget(pSensitivityLabel, 5, 2, 1, 2, Qt::AlignRight);
-    mainLayout->addWidget(pSensitivityBox,   5, 4, 1, 2, Qt::AlignLeft);
+    mainLayout->addWidget(pStringLabel,      4, 0, 1, 1, Qt::AlignHCenter|Qt::AlignBottom);
+    mainLayout->addWidget(pScoreLabel,       4, 2, 1, 2, Qt::AlignHCenter);
+    mainLayout->addWidget(pElapsedTimeLabel, 4, 4, 1, 2, Qt::AlignHCenter|Qt::AlignBottom);
 
-    mainLayout->addWidget(pInputLabel,       6, 0, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(pDeviceBox,        6, 1, 1, 5);
+    mainLayout->addWidget(pStringBox,        5, 0, 1, 1, Qt::AlignHCenter|Qt::AlignTop);
+    mainLayout->addWidget(pScoreEdit,        5, 2, 1, 2);
+    mainLayout->addWidget(pElapsedTimeEdit,  5, 4, 1, 2, Qt::AlignHCenter|Qt::AlignTop);
 
-    mainLayout->addWidget(pExitButton,       7, 0, 1, 1);
-    mainLayout->addWidget(pStartButton,      7, 4, 1, 2);
+    mainLayout->addWidget(pRevealButton,     6, 0, 1, 1);
+    mainLayout->addWidget(pSensitivityLabel, 6, 2, 1, 2, Qt::AlignRight);
+    mainLayout->addWidget(pSensitivityBox,   6, 4, 1, 2, Qt::AlignLeft);
+
+    mainLayout->addWidget(lineB,             7, 0, 1, 6);
+
+    mainLayout->addWidget(pExitButton,       8, 0, 1, 1);
+    mainLayout->addWidget(pStartButton,      8, 4, 1, 2);
 
 
     setLayout(mainLayout);
 
     // UI Message handlers
+    connect(pExitButton, SIGNAL(clicked()),
+            this, SLOT(onExitPushed()));
     connect(pStartButton, SIGNAL(clicked()),
             this, SLOT(onStartStopPushed()));
     connect(pDeviceBox, SIGNAL(activated(int)),
@@ -157,8 +166,8 @@ MainWindow::MainWindow()
             this, SLOT(onSensitivityChanged(int)));
     connect(pStringBox, SIGNAL(activated(int)),
             this, SLOT(onStringChanged(int)));
-    connect(pRevealCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(OnRevealCheckBoxStateChanged(int)));
+    connect(pRevealButton, SIGNAL(clicked()),
+            this, SLOT(OnRevealCheckBoxStateChanged()));
 
     // Define requested Audio Format
     formatAudio.setSampleRate(sampleRate);
@@ -170,6 +179,8 @@ MainWindow::MainWindow()
 
     // Create the AudioInput object
     pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio, this);
+//    QAudioFormat audioFormat = pAudioInput->format();
+//    qDebug() << "Audio Format" << audioFormat;
     pAudioInput->setBufferSize(sampleRate*sampleSeconds);
 
     // Computing the delays where calculate the autocorrelation function
@@ -185,6 +196,7 @@ MainWindow::MainWindow()
         R[i]        = 0;
     }
 
+    updateTimer.setTimerType(Qt::PreciseTimer);
     connect(&updateTimer, SIGNAL(timeout()),
             this, SLOT(onUpdateTimerElapsed()));
 }
@@ -225,7 +237,7 @@ MainWindow::saveSettings() {
     settings.setValue(QString("Input_Device"),      pDeviceBox->currentText());
     settings.setValue(QString("Sensitivity"),       pSensitivityBox->currentIndex());
     settings.setValue(QString("String"),            pStringBox->currentIndex());
-    settings.setValue(QString("Reveal"),            pRevealCheckBox->isChecked());
+    settings.setValue(QString("Reveal"),            pRevealButton->isChecked());
 }
 
 
@@ -246,31 +258,29 @@ MainWindow::buildFontSizes() {
 
     QFont font;
     int iFontSize;
-    int hMargin, vMargin;
-    QMargins margins;
+
+//    QSize size = qApp->screens()[0]->size();
+//    QString sSize= QString("%1 : %2").arg(size.width()).arg(size.height());
+//    pScoreEdit->setText(sSize);
 
     font = pScoreEdit->font();
-    margins = pScoreEdit->contentsMargins();
-    vMargin = margins.bottom() + margins.top();
-    hMargin = margins.left() + margins.right();
-    font.setCapitalization(QFont::Capitalize);
-    iFontSize = qMin((pScoreEdit->width()/3)-hMargin,
-                     pScoreEdit->height()-vMargin);
-    font.setPixelSize(iFontSize*2);
-    pScoreEdit->setFont(font);
-    font.setPixelSize(iFontSize);
-    pScoreLabel->setFont(font);
-
     font.setCapitalization(QFont::MixedCase);
+
+    iFontSize = 96;
+    font.setPointSize(iFontSize);
+    pScoreEdit->setFont(font);
+
+    iFontSize = 32;
+    font.setPointSize(iFontSize);
+
+    pScoreLabel->setFont(font);
     pStringLabel->setFont(font);
     pStringBox->setFont(font);
     pElapsedTimeLabel->setFont(font);
     pElapsedTimeEdit->setFont(font);
-
     pSensitivityLabel->setFont(font);
     pSensitivityBox->setFont(font);
-    pRevealCheckBox->setFont(font);
-
+    pRevealButton->setFont(font);
     pInputLabel->setFont(font);
     pStartButton->setFont(font);
     pExitButton->setFont(font);
@@ -327,7 +337,7 @@ MainWindow::OnBufferFull() {
     // The Signal Energy is greater than the treshold
     nDetections++;
     if(nDetections > 1) { // To avoid nDetections false detections
-        qDebug() << "nDetections" << nDetections << "R[0]" << R[0] << "threshold" << threshold;
+//        qDebug() << "nDetections" << nDetections << "R[0]" << R[0] << "threshold" << threshold;
         nDetections = 0;
         // Find the Autocorrelatione Max and prepare for the next Audio Buffer
         R[0] = 0.0;
@@ -419,9 +429,8 @@ MainWindow::onStringChanged(int index) {
 
 
 void
-MainWindow::OnRevealCheckBoxStateChanged(int isChecked) {
-    bRevealChecked = bool(isChecked);
-    pRevealCheckBox->setChecked(bRevealChecked);
+MainWindow::OnRevealCheckBoxStateChanged() {
+    bRevealChecked = pRevealButton->isChecked();
     pStaffArea->setRevealNote(bRevealChecked);
     pStaffArea->update();
 }
@@ -429,9 +438,18 @@ MainWindow::OnRevealCheckBoxStateChanged(int isChecked) {
 
 void
 MainWindow::onUpdateTimerElapsed() {
+#ifndef Q_OS_ANDROID
     int mSecs = startTime.msecsTo(QTime::currentTime());
     elapsedTime = elapsedTime.addSecs(mSecs/1000);
     startTime = QTime::currentTime();
+#else
+    elapsedTime = elapsedTime.addSecs(1);
+#endif
     pElapsedTimeEdit->setText(elapsedTime.toString());
 }
 
+
+void
+MainWindow::onExitPushed() {
+    close();
+}
