@@ -70,7 +70,6 @@ MainWindow::MainWindow()
     // Get the last Saved Settings
     getSettings();
 
-
     // Setup the styles
     sNormalStyle  = pScoreEdit->styleSheet();
     sErrorStyle   = "QLabel { color: rgb(255, 255, 255); background: rgb(255, 0, 0); selection-background-color: rgb(128, 128, 255); }";
