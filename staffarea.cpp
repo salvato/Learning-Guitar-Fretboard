@@ -173,25 +173,25 @@ StaffArea::handleC(QPainter* painter){
     }
     x = (width()+xBound)/2;
     if(octave == 2) {
-        y = (14*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+2*lineSpace, y+lineSpace/2));
+        y = 7*lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+2*lineSpace, y));
     }
     else if(octave == 3) {
-        y = (7*lineSpace+yTop)/2;
+        y = 3.5*lineSpace+yTop;
     }
     else if(octave == 4) {
-        y = yTop/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+2*lineSpace, y+lineSpace/2));
-        painter->drawLine(QPoint(x-lineSpace, y+3*lineSpace/2),
-                          QPoint(x+2*lineSpace, y+3*lineSpace/2));
+        y = yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+2*lineSpace, y));
+        painter->drawLine(QPoint(x-lineSpace, y+lineSpace),
+                          QPoint(x+2*lineSpace, y+lineSpace));
     }
     else {
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 // Sbaglia a disegnare C#3 con corda E
@@ -202,27 +202,27 @@ StaffArea::handleCsharp(QPainter* painter) {
     }
     x = (width()+xBound)/2 - lineSpace;
     if(octave == 2) {
-        y = (14*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+3*lineSpace, y+lineSpace/2));
+        y = 7*lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+3*lineSpace, y));
     }
     else if(octave == 3) {
-        y = (7*lineSpace+yTop)/2;
+        y = 3.5*lineSpace+yTop;
     }
     else if(octave == 4) {
-        y = yTop/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+3*lineSpace, y+lineSpace/2));
-        painter->drawLine(QPoint(x-lineSpace, y+3*lineSpace/2),
-                          QPoint(x+3*lineSpace, y+3*lineSpace/2));
+        y = yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+3*lineSpace, y));
+        painter->drawLine(QPoint(x-lineSpace, y+lineSpace),
+                          QPoint(x+3*lineSpace, y+lineSpace));
     }
     else {
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, diesis);
+    painter->drawImage(x, y-lineSpace/2, diesis);
     x = (width()+xBound)/2;
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -233,16 +233,16 @@ StaffArea::handleD(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 2) {
-        y = (13*lineSpace+yTop)/2;
+        y = 6.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (6*lineSpace+yTop)/2;
+        y = 3*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -253,18 +253,18 @@ StaffArea::handleDsharp(QPainter* painter) {
     }
     x = (width()+xBound)/2 - lineSpace;
     if(octave == 2) {
-        y = (13*lineSpace+yTop)/2;
+        y = 6.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (6*lineSpace+yTop)/2;
+        y = 3*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, diesis);
+    painter->drawImage(x, y-lineSpace/2, diesis);
     x = (width()+xBound)/2;
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -275,17 +275,16 @@ StaffArea::handleE(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 2) {
-        y = (12*lineSpace+yTop)/2;
+        y = 6*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (5*lineSpace+yTop)/2;
+        y = 2.5*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -296,17 +295,16 @@ StaffArea::handleF(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 2) {
-        y = (11*lineSpace+yTop)/2;
+        y = 5.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (4*lineSpace+yTop)/2;
+        y = 2*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -317,19 +315,18 @@ StaffArea::handleFsharp(QPainter* painter) {
     }
     x = (width()+xBound)/2 - lineSpace;
     if(octave == 2) {
-        y = (11*lineSpace+yTop)/2;
+        y = 5.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (4*lineSpace+yTop)/2;
+        y = 2*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, diesis);
+    painter->drawImage(x, y-lineSpace/2, diesis);
     x = (width()+xBound)/2;
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -340,17 +337,16 @@ StaffArea::handleG(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 2) {
-        y = (10*lineSpace+yTop)/2;
+        y = 5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (3*lineSpace+yTop)/2;
+        y = 1.5*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -361,19 +357,18 @@ StaffArea::handleGsharp(QPainter* painter) {
     }
     x = (width()+xBound)/2 - lineSpace;
     if(octave == 2) {
-        y = (10*lineSpace+yTop)/2;
+        y = 5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (3*lineSpace+yTop)/2;
+        y = 1.5*lineSpace+yTop;
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, diesis);
+    painter->drawImage(x, y-lineSpace/2, diesis);
     x = (width()+xBound)/2;
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -384,26 +379,25 @@ StaffArea::handleA(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 1) {
-        y = (16*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y-lineSpace/2),
-                          QPoint(x+2*lineSpace, y-lineSpace/2));
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+2*lineSpace, y+lineSpace/2));
+        y = 8*lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y-lineSpace),
+                          QPoint(x+2*lineSpace, y-lineSpace));
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+2*lineSpace, y));
     }
     else if(octave == 2) {
-        y = (9*lineSpace+yTop)/2;
+        y = 4.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (2*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+2*lineSpace, y+lineSpace/2));
+        y = lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+2*lineSpace, y));
     }
     else {//(octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -414,28 +408,27 @@ StaffArea::handleAsharp(QPainter* painter) {
     }
     x = (width()+xBound)/2 - lineSpace;
     if(octave == 1) {
-        y = (16*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y-lineSpace/2),
-                          QPoint(x+3*lineSpace, y-lineSpace/2));
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+3*lineSpace, y+lineSpace/2));
+        y = 8*lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y-lineSpace),
+                          QPoint(x+3*lineSpace, y-lineSpace));
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+3*lineSpace, y));
     }
     else if(octave == 2) {
-        y = (9*lineSpace+yTop)/2;
+        y = 4.5*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (2*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
-                          QPoint(x+3*lineSpace, y+lineSpace/2));
+        y = lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y),
+                          QPoint(x+3*lineSpace, y));
     }
-    else {//(octave == 4)
+    else { // (octave == 4)
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-    painter->drawImage(x, y, diesis);
+    painter->drawImage(x, y-lineSpace/2, diesis);
     x = (width()+xBound)/2;
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
@@ -446,24 +439,23 @@ StaffArea::handleB(QPainter* painter) {
     }
     x = (width()+xBound)/2;
     if(octave == 1) {
-        y = (15*lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y),
-                          QPoint(x+2*lineSpace, y));
+        y = 7.5*lineSpace+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y-lineSpace/2),
+                          QPoint(x+2*lineSpace,y-lineSpace/2));
     }
     else if(octave == 2) {
-        y = (8*lineSpace+yTop)/2;
+        y = 4*lineSpace+yTop;
     }
     else if(octave == 3) {
-        y = (lineSpace+yTop)/2;
-        painter->drawLine(QPoint(x-lineSpace, y+lineSpace),
-                          QPoint(x+2*lineSpace, y+lineSpace));
+        y = lineSpace/2+yTop;
+        painter->drawLine(QPoint(x-lineSpace, y+lineSpace/2),
+                          QPoint(x+2*lineSpace, y+lineSpace/2));
     }
     else {
         errorMessage(QString("%1 Line %2").arg(__FUNCTION__).arg(__LINE__));
         return;
     }
-
-    painter->drawImage(x, y, semibreve);
+    painter->drawImage(x, y-lineSpace/2, semibreve);
 }
 
 
