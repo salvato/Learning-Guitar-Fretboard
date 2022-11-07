@@ -25,7 +25,8 @@ SOFTWARE.
 #include "mainwindow.h"
 
 #include <QtWidgets>
-#include <QAudioDeviceInfo>
+#include <QMediaDevices>
+
 
 // Mio cell 360x717
 // Tablet Acer 1280x752
@@ -86,9 +87,9 @@ MainWindow::MainWindow()
 
     // Audio Devices ComboBox handling
     // Fills the ComboBox with a list of audio devices that support AudioInput
-    deviceInfo = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    deviceInfo = QMediaDevices::audioInputs();
     for(int i=0; i<deviceInfo.count(); i++) {
-        pDeviceBox->addItem(deviceInfo.at(i).deviceName(), QVariant::fromValue(deviceInfo.at(i)));
+        pDeviceBox->addItem(deviceInfo.at(i).description(), QVariant::fromValue(deviceInfo.at(i)));
     }
     // if still connected, use the previous saved device
     int index = pDeviceBox->findText(sInputDevice);
@@ -151,7 +152,6 @@ MainWindow::MainWindow()
     mainLayout->addWidget(pExitButton,       8, 0, 1, 1);
     mainLayout->addWidget(pStartButton,      8, 4, 1, 2);
 
-
     setLayout(mainLayout);
 
     // UI Message handlers
@@ -168,19 +168,20 @@ MainWindow::MainWindow()
     connect(pRevealButton, SIGNAL(clicked()),
             this, SLOT(OnRevealCheckBoxStateChanged()));
 
+    // Create the QAudioInput object that represents an input channel.
+    // It enables the selection of the physical input device to be used.
+    // It allows muting the channel and changing the channel's volume.
+    pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), this);
+
     // Define requested Audio Format
     formatAudio.setSampleRate(sampleRate);
     formatAudio.setChannelCount(1);
-    formatAudio.setSampleType(QAudioFormat::SignedInt);
-    formatAudio.setByteOrder(QAudioFormat::LittleEndian);
-    formatAudio.setSampleSize(16);
-    formatAudio.setCodec("audio/pcm");
+    formatAudio.setSampleFormat(QAudioFormat::Int16);
 
-    // Create the AudioInput object
-    pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio, this);
-//    QAudioFormat audioFormat = pAudioInput->format();
-//    qDebug() << "Audio Format" << audioFormat;
-    pAudioInput->setBufferSize(sampleRate*sampleSeconds);
+    // Create the Audio Input Source with the specified QAudioDevice
+    // also sending the QAudioFormat to be used for the acquisition.
+    pAudioSource = new  QAudioSource(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio);
+    pAudioSource->setBufferSize(sampleRate*sampleSeconds);
 
     // Computing the delays where calculate the autocorrelation function
     // and zeroing the autocorrelation function
@@ -195,6 +196,7 @@ MainWindow::MainWindow()
         R[i]        = 0;
     }
 
+    // Setup of the timer for update the Running Time
     updateTimer.setTimerType(Qt::PreciseTimer);
     connect(&updateTimer, SIGNAL(timeout()),
             this, SLOT(onUpdateTimerElapsed()));
@@ -205,7 +207,7 @@ void
 MainWindow::closeEvent(QCloseEvent *event) {
     updateTimer.stop();
     if(pAudioInput) {
-        pAudioInput->stop();
+        pAudioSource->stop();
         delete pAudioInput;
     }
     saveSettings();
@@ -292,7 +294,7 @@ MainWindow::onStartStopPushed() {
     if(pStartButton->text().contains("Stop")) {
         updateTimer.stop();
         pStartButton->setText("Start");
-        pAudioInput->stop();
+        pAudioSource->stop();
         pBuffer->close();
         pInputLabel->setEnabled(true);
         pDeviceBox->setEnabled(true);
@@ -307,7 +309,7 @@ MainWindow::onStartStopPushed() {
     pStaffArea->setNote(notes[currentNote], currentNote);
     score = 0;
     pScoreEdit->setText(QString("%1").arg(score));
-    pAudioInput->start(pBuffer);
+    pAudioSource->start(pBuffer);
     startTime = QTime::currentTime();
     elapsedTime = QTime(0, 0, 0, 0);
     updateTimer.start(1000);
@@ -321,9 +323,9 @@ MainWindow::OnBufferFull() {
     /// solo nei punti corrispondenti ai periodi delle note.   ///
     //////////////////////////////////////////////////////////////
     for(int t=0; t<nData-acorLags[1]; t++) {
-        double ft = double(dataPointer[t])/32768.0;
+        double ft = double(dataPointer[t])/double(SHRT_MAX);
         for(int tau=0; tau<Lags; tau++) {
-            double ftau = double(dataPointer[t+acorLags[tau]])/32768.0;
+            double ftau = double(dataPointer[t+acorLags[tau]])/double(SHRT_MAX);
             R[tau] += ft*ftau;
         }
     }
@@ -338,7 +340,7 @@ MainWindow::OnBufferFull() {
     if(nDetections > 1) { // To avoid nDetections false detections
 //        qDebug() << "nDetections" << nDetections << "R[0]" << R[0] << "threshold" << threshold;
         nDetections = 0;
-        // Find the Autocorrelatione Max and prepare for the next Audio Buffer
+        // Find the Autocorrelation Max and prepare for the next Audio Buffer
         R[0] = 0.0;
         double rMax = R[1];
         int iMax = 1;
@@ -367,10 +369,9 @@ void
 MainWindow::onInputDeviceChanged(int index) {
     Q_UNUSED(index)
     if(pAudioInput) delete pAudioInput;
-    pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio, this);
-    pAudioInput->setBufferSize(sampleRate*sampleSeconds);
-
-//    qDebug() << "onInputDeviceChanged(" << index << ")";
+    pAudioInput = new QAudioInput(deviceInfo.at(pDeviceBox->currentIndex()), this);
+    pAudioSource = new  QAudioSource(deviceInfo.at(pDeviceBox->currentIndex()), formatAudio);
+    pAudioSource->setBufferSize(sampleRate*sampleSeconds);
 }
 
 

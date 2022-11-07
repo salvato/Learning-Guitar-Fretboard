@@ -32,7 +32,9 @@ SOFTWARE.
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QAudioDevice>
 #include <QAudioInput>
+#include <QAudioSource>
 #include <QSettings>
 #include <QTimer>
 #include <QRandomGenerator>
@@ -67,8 +69,9 @@ public slots:
 
 private:
     QSettings settings;
-    QList<QAudioDeviceInfo> deviceInfo;
+    QList<QAudioDevice> deviceInfo;
     QAudioFormat formatAudio;
+    QAudioSource* pAudioSource;
     int sampleRate;
     double sampleSeconds;
     StaffArea* pStaffArea;
