@@ -116,7 +116,6 @@ private:
     int currentString;
     int startNote, endNote, nFrets;
     QTime startTime;
-    bool bFontBuilt;
 
     QString          sNormalStyle;
     QString          sErrorStyle;

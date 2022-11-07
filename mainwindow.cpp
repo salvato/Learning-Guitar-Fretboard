@@ -58,8 +58,6 @@ MainWindow::MainWindow()
     , threshold(5.0)
     , nDetections(0)
     , nFrets(12) // Only first 12 Frets (22 on Guitars Like Fender Stratocaster)
-    , bFontBuilt(false)
-
 {
     pRandomGenerator->securelySeeded();
     pRevealButton->setCheckable(true);
@@ -242,15 +240,11 @@ MainWindow::saveSettings() {
 }
 
 
+// When resizeEvent() is called, the widget already has its new geometry.
 void
 MainWindow::resizeEvent(QResizeEvent *event) {
-    if(!bFontBuilt) {
-        bFontBuilt = true;
         buildFontSizes();
         event->setAccepted(true);
-    }
-    else
-        event->setAccepted(false);
 }
 
 
@@ -264,14 +258,14 @@ MainWindow::buildFontSizes() {
 //    QString sSize= QString("%1 : %2").arg(size.width()).arg(size.height());
 //    pScoreEdit->setText(sSize);
 
+    iFontSize = qMin(pScoreEdit->width()/3, pScoreEdit->height());
     font = pScoreEdit->font();
     font.setCapitalization(QFont::MixedCase);
 
-    iFontSize = 96;
     font.setPointSize(iFontSize);
     pScoreEdit->setFont(font);
 
-    iFontSize = 32;
+    iFontSize = 12;
     font.setPointSize(iFontSize);
 
     pScoreLabel->setFont(font);
