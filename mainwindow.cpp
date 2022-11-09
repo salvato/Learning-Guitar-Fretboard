@@ -233,40 +233,30 @@ MainWindow::getSettings() {
 void
 MainWindow::saveSettings() {
     settings.setValue(QString("MainWindow_Dialog"), saveGeometry());
-    settings.setValue(QString("Input_Device"),      pDeviceBox->currentText());
-    settings.setValue(QString("Sensitivity"),       pSensitivityBox->currentIndex());
-    settings.setValue(QString("String"),            pStringBox->currentIndex());
-    settings.setValue(QString("Reveal"),            pRevealButton->isChecked());
+    settings.setValue(QString("Input_Device"), pDeviceBox->currentText());
+    settings.setValue(QString("Sensitivity"),  pSensitivityBox->currentIndex());
+    settings.setValue(QString("String"),       pStringBox->currentIndex());
+    settings.setValue(QString("Reveal"),       pRevealButton->isChecked());
 }
 
 
 // When resizeEvent() is called, the widget already has its new geometry.
 void
 MainWindow::resizeEvent(QResizeEvent *event) {
-        buildFontSizes();
-        event->setAccepted(true);
+    buildFontSizes();
+    event->setAccepted(true);
 }
 
 
 void
 MainWindow::buildFontSizes() {
-
-    QFont font;
-    int iFontSize;
-
-//    QSize size = qApp->screens()[0]->size();
-//    QString sSize= QString("%1 : %2").arg(size.width()).arg(size.height());
-//    pScoreEdit->setText(sSize);
-
-    iFontSize = qMin(pScoreEdit->width()/3, pScoreEdit->height());
-    font = pScoreEdit->font();
-    font.setCapitalization(QFont::MixedCase);
-
-    font.setPointSize(iFontSize);
+    QFont font = pScoreEdit->font();
+    int iFontSize = qMin(width()/9, height());
+    font.setPixelSize(iFontSize);
     pScoreEdit->setFont(font);
 
-    iFontSize = 12;
-    font.setPointSize(iFontSize);
+    iFontSize = qMin(width()/30, height());
+    font.setPixelSize(iFontSize);
 
     pScoreLabel->setFont(font);
     pStringLabel->setFont(font);
@@ -280,7 +270,6 @@ MainWindow::buildFontSizes() {
     pStartButton->setFont(font);
     pExitButton->setFont(font);
 }
-
 
 
 void
