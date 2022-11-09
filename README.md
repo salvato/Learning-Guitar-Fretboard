@@ -1,6 +1,6 @@
 # Learning-Guitar-Fretboard
 
-This is a simple App (using Qt version 5.15.2) aimed to help learning the note positions on a guitar fretboard
+This is a simple App (using Qt version 6.4.0) aimed to help learning the note positions on a guitar fretboard
 (Standard Tuning only at present).
 
 The App has been tested on Ubuntu and on an Android Tablet.
