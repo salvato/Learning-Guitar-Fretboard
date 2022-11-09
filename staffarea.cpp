@@ -104,7 +104,7 @@ StaffArea::paintEvent(QPaintEvent* /* event */) {
     painter.setBrush(brush);
     painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
-    font.setPixelSize(48);
+    font.setPixelSize(height()/12);
     painter.setFont(font);
 
     // Draw the staff
@@ -158,8 +158,8 @@ StaffArea::paintEvent(QPaintEvent* /* event */) {
             return;
     }
     if(bRevealNote) {
-        painter.drawText(QRect(x-100, height()-3*lineSpace, 200, 3*lineSpace),
-                         Qt::AlignCenter,
+        painter.drawText(QRect(4*lineSpace, height()-(height()/12), width(), 3*lineSpace),
+                         Qt::AlignLeft,
                          note.sname);
     }
 }
