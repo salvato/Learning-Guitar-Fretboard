@@ -56,6 +56,8 @@ MainWindow::MainWindow()
     , chunkSize(sampleRate*sampleSeconds)
     , pRandomGenerator(QRandomGenerator::system())
     , threshold(5.0)
+    , updateTime(1000)
+    , timeToWait(1000)
     , nDetections(0)
     , nFrets(12) // Only first 12 Frets (22 on Guitars Like Fender Stratocaster)
 {
@@ -198,12 +200,15 @@ MainWindow::MainWindow()
     updateTimer.setTimerType(Qt::PreciseTimer);
     connect(&updateTimer, SIGNAL(timeout()),
             this, SLOT(onUpdateTimerElapsed()));
+    connect(&waitTimer, SIGNAL(timeout()),
+            this, SLOT(onWaitTimerElapsed()));
 }
 
 
 void
 MainWindow::closeEvent(QCloseEvent *event) {
     updateTimer.stop();
+    waitTimer.stop();
     if(pAudioInput) {
         pAudioSource->stop();
         delete pAudioInput;
@@ -295,7 +300,7 @@ MainWindow::onStartStopPushed() {
     pAudioSource->start(pBuffer);
     startTime = QTime::currentTime();
     elapsedTime = QTime(0, 0, 0, 0);
-    updateTimer.start(1000);
+    updateTimer.start(updateTime);
 }
 
 
@@ -335,11 +340,16 @@ MainWindow::OnBufferFull() {
             R[i] = 0.0;
         }
         if(iMax == currentNote) {
+            disconnect(pBuffer, SIGNAL(bufferFull()),
+                       this, SLOT(OnBufferFull()));
+            waitTimer.start(timeToWait);
+            elapsedTime = elapsedTime.addSecs(updateTimer.remainingTime()/double(updateTime));
+            startTime = QTime::currentTime();
+            updateTimer.stop();
             score++;
             pScoreEdit->setText(QString("%1").arg(score));
-            currentNote = pRandomGenerator->bounded(startNote, endNote);
-            pStaffArea->setNote(notes[currentNote], currentNote);
             pScoreEdit->setStyleSheet(sSuccessStyle);
+            pStaffArea->setNote(notes[0], -1);
         }
         else {
             pScoreEdit->setStyleSheet(sErrorStyle);
@@ -423,12 +433,23 @@ void
 MainWindow::onUpdateTimerElapsed() {
 #ifndef Q_OS_ANDROID
     int mSecs = startTime.msecsTo(QTime::currentTime());
-    elapsedTime = elapsedTime.addSecs(mSecs/1000);
+    elapsedTime = elapsedTime.addSecs(mSecs/double(updateTime));
     startTime = QTime::currentTime();
 #else
     elapsedTime = elapsedTime.addSecs(1);
 #endif
     pElapsedTimeEdit->setText(elapsedTime.toString());
+}
+
+
+void
+MainWindow::onWaitTimerElapsed() {
+    waitTimer.stop();
+    currentNote = pRandomGenerator->bounded(startNote, endNote);
+    pStaffArea->setNote(notes[currentNote], currentNote);
+    connect(pBuffer, SIGNAL(bufferFull()),
+            this, SLOT(OnBufferFull()));
+    updateTimer.start(updateTime);
 }
 
 

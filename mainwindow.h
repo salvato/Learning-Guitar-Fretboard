@@ -65,6 +65,7 @@ public slots:
     void OnRevealCheckBoxStateChanged();
     void OnBufferFull();
     void onUpdateTimerElapsed();
+    void onWaitTimerElapsed();
     void onExitPushed();
 
 private:
@@ -108,6 +109,9 @@ private:
     QString sInputDevice;
     QTimer testTimer;
     QTimer updateTimer;
+    QTimer waitTimer;
+    int updateTime;
+    int timeToWait;
     int currentNote;
     int nDetections;
     int sensitivityIndex;
